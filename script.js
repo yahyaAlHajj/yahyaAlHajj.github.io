@@ -1,3 +1,38 @@
+// Initialize AOS
+AOS.init({
+    duration: 1000,
+    once: true,
+    offset: 100
+});
+
+// Progress Bar
+const progressBar = document.getElementById('progressBar');
+const scrollToTopBtn = document.getElementById('scrollToTop');
+
+function updateProgressBar() {
+    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrollPercent = (scrollTop / scrollHeight) * 100;
+    progressBar.style.width = scrollPercent + '%';
+    
+    // Show/hide scroll to top button
+    if (scrollTop > 300) {
+        scrollToTopBtn.classList.add('show');
+    } else {
+        scrollToTopBtn.classList.remove('show');
+    }
+}
+
+window.addEventListener('scroll', updateProgressBar);
+
+// Scroll to top functionality
+scrollToTopBtn.addEventListener('click', () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+});
+
 // Mobile Navigation Toggle
 const hamburger = document.querySelector('.hamburger');
 const navMenu = document.querySelector('.nav-menu');
@@ -27,13 +62,17 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Navbar background on scroll
+// Enhanced Navbar background on scroll
 window.addEventListener('scroll', () => {
     const navbar = document.querySelector('.navbar');
     if (window.scrollY > 100) {
         navbar.style.background = 'rgba(15, 15, 35, 0.98)';
+        navbar.style.backdropFilter = 'blur(20px)';
+        navbar.style.borderBottom = '1px solid rgba(99, 102, 241, 0.2)';
     } else {
         navbar.style.background = 'rgba(15, 15, 35, 0.95)';
+        navbar.style.backdropFilter = 'blur(10px)';
+        navbar.style.borderBottom = '1px solid var(--border-color)';
     }
 });
 
@@ -178,14 +217,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Parallax effect for hero background
+// Enhanced Parallax effects
 window.addEventListener('scroll', () => {
     const scrolled = window.pageYOffset;
     const heroBackground = document.querySelector('.hero-bg-animation');
+    const profileGlow = document.querySelector('.profile-glow');
     
     if (heroBackground) {
         heroBackground.style.transform = `translateY(${scrolled * 0.5}px)`;
     }
+    
+    if (profileGlow) {
+        profileGlow.style.transform = `rotate(${scrolled * 0.1}deg)`;
+    }
+    
+    // Floating icons parallax
+    const floatingIcons = document.querySelectorAll('.floating-icon');
+    floatingIcons.forEach((icon, index) => {
+        const speed = 0.02 + (index * 0.01);
+        icon.style.transform += ` translateY(${scrolled * speed}px)`;
+    });
 });
 
 // Social link hover effects
@@ -222,14 +273,60 @@ document.querySelectorAll('.testimonial-card').forEach((card, index) => {
     });
 });
 
-// Loading animation
+// Enhanced Loading animation
 window.addEventListener('load', () => {
-    document.body.style.opacity = '0';
-    document.body.style.transition = 'opacity 0.5s ease';
+    // Create loading screen
+    const loadingScreen = document.createElement('div');
+    loadingScreen.innerHTML = `
+        <div style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease;
+        ">
+            <div style="
+                text-align: center;
+                color: var(--text-primary);
+            ">
+                <div style="
+                    width: 60px;
+                    height: 60px;
+                    border: 3px solid var(--primary-color);
+                    border-top: 3px solid transparent;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                    margin: 0 auto 1rem;
+                "></div>
+                <h3 style="background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Loading...</h3>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(loadingScreen);
+    
+    // Add spin animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    `;
+    document.head.appendChild(style);
     
     setTimeout(() => {
-        document.body.style.opacity = '1';
-    }, 100);
+        loadingScreen.style.opacity = '0';
+        setTimeout(() => {
+            document.body.removeChild(loadingScreen);
+        }, 500);
+    }, 1500);
 });
 
 // Keyboard navigation support
@@ -297,7 +394,7 @@ document.querySelectorAll('.btn').forEach(button => {
     });
 });
 
-// Add CSS for ripple effect
+// Enhanced CSS for ripple effect and other animations
 const style = document.createElement('style');
 style.textContent = `
     .btn {
@@ -320,5 +417,72 @@ style.textContent = `
             opacity: 0;
         }
     }
+    
+    /* Enhanced hover effects */
+    .service-card:hover {
+        transform: translateY(-15px) scale(1.02) !important;
+        box-shadow: 0 25px 50px rgba(99, 102, 241, 0.2) !important;
+    }
+    
+    .testimonial-card:hover {
+        transform: translateY(-10px) scale(1.02) !important;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    /* Glowing text effect */
+    .gradient-text {
+        text-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+    }
 `;
 document.head.appendChild(style);
+
+// Add mouse cursor trail effect
+let mouseTrail = [];
+document.addEventListener('mousemove', (e) => {
+    mouseTrail.push({x: e.clientX, y: e.clientY, time: Date.now()});
+    
+    // Keep only recent trail points
+    mouseTrail = mouseTrail.filter(point => Date.now() - point.time < 1000);
+    
+    // Create trail effect on hero section
+    if (e.target.closest('.hero')) {
+        const trail = document.createElement('div');
+        trail.style.cssText = `
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            left: ${e.clientX - 3}px;
+            top: ${e.clientY - 3}px;
+            opacity: 0.7;
+            animation: trailFade 1s ease-out forwards;
+        `;
+        
+        document.body.appendChild(trail);
+        
+        setTimeout(() => {
+            if (document.body.contains(trail)) {
+                document.body.removeChild(trail);
+            }
+        }, 1000);
+    }
+});
+
+// Add trail fade animation
+const trailStyle = document.createElement('style');
+trailStyle.textContent = `
+    @keyframes trailFade {
+        0% {
+            opacity: 0.7;
+            transform: scale(1);
+        }
+        100% {
+            opacity: 0;
+            transform: scale(0);
+        }
+    }
+`;
+document.head.appendChild(trailStyle);

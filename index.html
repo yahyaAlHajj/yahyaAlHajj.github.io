@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yahya Al-Hajj - Professional English Teacher</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -40,38 +42,83 @@
         </div>
     </nav>
 
+    <!-- Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <!-- Scroll to Top Button -->
+    <button class="scroll-to-top" id="scrollToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+    
     <!-- Hero Section -->
     <section id="home" class="hero">
         <div class="hero-container">
             <div class="hero-content">
-                <div class="hero-text">
-                    <h1 class="hero-title">
+                <div class="hero-text" data-aos="fade-right" data-aos-duration="1000">
+                    <div class="hero-badge">
+                        <i class="fas fa-star"></i>
+                        <span>Premium English Teacher</span>
+                    </div>
+                    <h1 class="hero-title animate__animated animate__fadeInUp">
                         Master English with
                         <span class="gradient-text">Yahya Al-Hajj</span>
                     </h1>
                     <p class="hero-description">
-                        Professional English Teacher with years of experience helping students achieve fluency and confidence in English language learning.
+                        Professional English Teacher with years of experience helping students achieve fluency and confidence in English language learning. Transform your communication skills with personalized, engaging lessons.
                     </p>
+                    <div class="hero-stats">
+                        <div class="stat-mini">
+                            <span class="stat-mini-number">500+</span>
+                            <span class="stat-mini-label">Students</span>
+                        </div>
+                        <div class="stat-mini">
+                            <span class="stat-mini-number">5+</span>
+                            <span class="stat-mini-label">Years</span>
+                        </div>
+                        <div class="stat-mini">
+                            <span class="stat-mini-number">98%</span>
+                            <span class="stat-mini-label">Success</span>
+                        </div>
+                    </div>
                     <div class="hero-buttons">
-                        <a href="#contact" class="btn btn-primary">Start Learning</a>
-                        <a href="#about" class="btn btn-secondary">Learn More</a>
+                        <a href="#contact" class="btn btn-primary btn-glow">
+                            <i class="fas fa-rocket"></i>
+                            Start Learning Now
+                        </a>
+                        <a href="#about" class="btn btn-secondary btn-glass">
+                            <i class="fas fa-play"></i>
+                            Watch Demo
+                        </a>
                     </div>
                 </div>
-                <div class="hero-image">
+                <div class="hero-image" data-aos="fade-left" data-aos-duration="1000">
                     <div class="profile-card">
+                        <div class="profile-glow"></div>
                         <div class="profile-image">
                             <img src="yahya-alhajj.jpg" alt="Yahya Al-Hajj - English Teacher" />
+                            <div class="profile-ring"></div>
                         </div>
                         <div class="floating-elements">
                             <div class="floating-icon icon-1">
                                 <i class="fas fa-book"></i>
+                                <span class="tooltip">Grammar</span>
                             </div>
                             <div class="floating-icon icon-2">
                                 <i class="fas fa-graduation-cap"></i>
+                                <span class="tooltip">Certified</span>
                             </div>
                             <div class="floating-icon icon-3">
                                 <i class="fas fa-language"></i>
+                                <span class="tooltip">Fluency</span>
                             </div>
+                            <div class="floating-icon icon-4">
+                                <i class="fas fa-trophy"></i>
+                                <span class="tooltip">Excellence</span>
+                            </div>
+                        </div>
+                        <div class="achievement-badges">
+                            <div class="badge badge-1">IELTS Expert</div>
+                            <div class="badge badge-2">Business English</div>
                         </div>
                     </div>
                 </div>
@@ -376,6 +423,7 @@
         </div>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
