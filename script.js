@@ -97,26 +97,72 @@ window.addEventListener('scroll', () => {
     });
 });
 
+// Input sanitization function
+function sanitizeInput(input) {
+    if (typeof input !== 'string') return '';
+    
+    // Remove HTML tags and dangerous characters
+    return input
+        .replace(/<[^>]*>/g, '') // Remove HTML tags
+        .replace(/[<>"'&]/g, '') // Remove dangerous characters
+        .replace(/javascript:/gi, '') // Remove javascript: protocol
+        .replace(/on\w+=/gi, '') // Remove event handlers
+        .trim() // Remove whitespace
+        .substring(0, 500); // Limit length
+}
+
+// Email validation function
+function isValidEmail(email) {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+}
+
+// Name validation function
+function isValidName(name) {
+    const nameRegex = /^[a-zA-Z\s\u0600-\u06FF]{2,50}$/; // Allow Arabic and English letters
+    return nameRegex.test(name);
+}
+
 // Form submission
 const contactForm = document.querySelector('.form');
 if (contactForm) {
     contactForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // Get form data
-        const formData = new FormData(this);
-        const name = this.querySelector('input[type="text"]').value;
-        const email = this.querySelector('input[type="email"]').value;
-        const service = this.querySelector('select').value;
-        const message = this.querySelector('textarea').value;
+        // Get and sanitize form data
+        const rawName = this.querySelector('input[type="text"]').value;
+        const rawEmail = this.querySelector('input[type="email"]').value;
+        const rawService = this.querySelector('select').value;
+        const rawMessage = this.querySelector('textarea').value;
         
-        // Simple validation
+        // Sanitize inputs
+        const name = sanitizeInput(rawName);
+        const email = sanitizeInput(rawEmail);
+        const service = sanitizeInput(rawService);
+        const message = sanitizeInput(rawMessage);
+        
+        // Enhanced validation
         if (!name || !email || !service || !message) {
             alert('Please fill in all fields');
             return;
         }
         
-        // Create WhatsApp message
+        if (!isValidName(name)) {
+            alert('Please enter a valid name (letters only, 2-50 characters)');
+            return;
+        }
+        
+        if (!isValidEmail(email)) {
+            alert('Please enter a valid email address');
+            return;
+        }
+        
+        if (message.length < 10) {
+            alert('Please enter a message with at least 10 characters');
+            return;
+        }
+        
+        // Create sanitized WhatsApp message
         const whatsappMessage = `Hello Yahya! I'm interested in your English teaching services.
         
 Name: ${name}
@@ -124,7 +170,7 @@ Email: ${email}
 Service: ${service}
 Message: ${message}`;
         
-        const whatsappURL = `https://wa.me/967770933821?text=${encodeURIComponent(whatsappMessage)}`;
+        const whatsappURL = `https://wa.me/967783072080?text=${encodeURIComponent(whatsappMessage)}`;
         
         // Show success message
         alert('Thank you for your message! You will be redirected to WhatsApp to complete your inquiry.');
@@ -227,9 +273,10 @@ window.addEventListener('scroll', () => {
         heroBackground.style.transform = `translateY(${scrolled * 0.5}px)`;
     }
     
-    if (profileGlow) {
-        profileGlow.style.transform = `rotate(${scrolled * 0.1}deg)`;
-    }
+    // Remove profile glow rotation effect
+    // if (profileGlow) {
+    //     profileGlow.style.transform = `rotate(${scrolled * 0.1}deg)`;
+    // }
     
     // Floating icons parallax
     const floatingIcons = document.querySelectorAll('.floating-icon');
@@ -273,8 +320,105 @@ document.querySelectorAll('.testimonial-card').forEach((card, index) => {
     });
 });
 
+// Add section transition effects
+document.addEventListener('DOMContentLoaded', () => {
+    const sections = document.querySelectorAll('section');
+    sections.forEach((section, index) => {
+        if (index > 0) { // Skip first section
+            const transition = document.createElement('div');
+            transition.className = 'section-transition';
+            section.parentNode.insertBefore(transition, section);
+        }
+    });
+});
+
+let isTyping = false;
+let typingTimeout = null;
+
+function typeWriter(element, text, speed = 100) {
+    if (isTyping) return; // Prevent multiple instances
+    
+    isTyping = true;
+    element.innerHTML = '';
+    
+    // Create array of characters with their styling info
+    const textParts = [
+        { text: 'Master English with ', isColored: false },
+        { text: 'Yahya Al-Hajj', isColored: true }
+    ];
+    
+    let currentPartIndex = 0;
+    let currentCharIndex = 0;
+    
+    function type() {
+        if (currentPartIndex < textParts.length) {
+            const currentPart = textParts[currentPartIndex];
+            
+            if (currentCharIndex < currentPart.text.length) {
+                // Add character with proper styling
+                const char = currentPart.text.charAt(currentCharIndex);
+                
+                if (currentPart.isColored) {
+                    // Add colored character
+                    if (currentCharIndex === 0) {
+                        // Start the colored span
+                        element.innerHTML += '<span style="color: #6366f1 !important; font-weight: bold !important;">';
+                    }
+                    element.innerHTML += char;
+                    if (currentCharIndex === currentPart.text.length - 1) {
+                        // Close the colored span
+                        element.innerHTML += '</span>';
+                    }
+                } else {
+                    // Add normal character
+                    element.innerHTML += char;
+                }
+                
+                currentCharIndex++;
+            } else {
+                // Move to next part
+                currentPartIndex++;
+                currentCharIndex = 0;
+            }
+            
+            typingTimeout = setTimeout(type, speed);
+        } else {
+            isTyping = false;
+        }
+    }
+    type();
+}
+
+function stopTyping() {
+    if (typingTimeout) {
+        clearTimeout(typingTimeout);
+        typingTimeout = null;
+    }
+    isTyping = false;
+}
+
+// Initialize typing effect
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        const heroTitle = document.querySelector('.hero-title');
+        if (heroTitle) {
+            const originalText = heroTitle.textContent;
+            typeWriter(heroTitle, originalText, 50);
+            setInterval(() => {
+                stopTyping(); // Stop any ongoing typing
+                setTimeout(() => {
+                    typeWriter(heroTitle, originalText, 50);
+                }, 100); // Small delay to ensure clean start
+            }, 10000); // Reduced interval to 10 seconds
+        }
+    }, 2000);
+});
+
+// ...
+
 // Enhanced Loading animation
 window.addEventListener('load', () => {
+    // ...
     // Create loading screen
     const loadingScreen = document.createElement('div');
     loadingScreen.innerHTML = `
@@ -345,7 +489,7 @@ document.addEventListener('DOMContentLoaded', () => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             const message = "Hello Yahya! I'm interested in your English teaching services. Could you please provide more information?";
-            const whatsappURL = `https://wa.me/967770933821?text=${encodeURIComponent(message)}`;
+            const whatsappURL = `https://wa.me/967783072080?text=${encodeURIComponent(message)}`;
             window.open(whatsappURL, '_blank');
         });
     });
@@ -366,7 +510,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const subject = "English Teaching Services Inquiry";
             const body = "Hello Yahya,\n\nI'm interested in your English teaching services. Could you please provide more information about your courses and availability?\n\nThank you!";
-            const mailtoURL = `mailto:yahya.al.hajj100@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            const mailtoURL = `mailto:yahyazacoo@gmail.com?subject=${encodeURIComponent(sanitizeInput(subject))}&body=${encodeURIComponent(sanitizeInput(body))}`;
             window.location.href = mailtoURL;
         });
     });
@@ -393,6 +537,42 @@ document.querySelectorAll('.btn').forEach(button => {
         }, 600);
     });
 });
+
+// Add dynamic background particles
+function createParticles() {
+    const particleContainer = document.createElement('div');
+    particleContainer.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+        overflow: hidden;
+    `;
+    
+    for (let i = 0; i < 20; i++) {
+        const particle = document.createElement('div');
+        particle.style.cssText = `
+            position: absolute;
+            width: ${Math.random() * 4 + 2}px;
+            height: ${Math.random() * 4 + 2}px;
+            background: rgba(99, 102, 241, ${Math.random() * 0.3 + 0.1});
+            border-radius: 50%;
+            left: ${Math.random() * 100}%;
+            top: ${Math.random() * 100}%;
+            animation: float ${Math.random() * 10 + 5}s ease-in-out infinite;
+            animation-delay: ${Math.random() * 5}s;
+        `;
+        particleContainer.appendChild(particle);
+    }
+    
+    document.body.appendChild(particleContainer);
+}
+
+// Initialize particles
+document.addEventListener('DOMContentLoaded', createParticles);
 
 // Enhanced CSS for ripple effect and other animations
 const style = document.createElement('style');
@@ -436,29 +616,37 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Add mouse cursor trail effect
+// Enhanced mouse cursor trail effect for entire page
 let mouseTrail = [];
+let trailCount = 0;
+const maxTrails = 3; // Limit trails for performance
+
 document.addEventListener('mousemove', (e) => {
     mouseTrail.push({x: e.clientX, y: e.clientY, time: Date.now()});
     
     // Keep only recent trail points
     mouseTrail = mouseTrail.filter(point => Date.now() - point.time < 1000);
     
-    // Create trail effect on hero section
-    if (e.target.closest('.hero')) {
+    // Throttle trail creation for better performance
+    if (trailCount < maxTrails) {
+        trailCount++;
+        
+        // Create enhanced trail effect on entire page
         const trail = document.createElement('div');
         trail.style.cssText = `
             position: fixed;
-            width: 6px;
-            height: 6px;
-            background: var(--gradient-primary);
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.8) 0%, rgba(139, 92, 246, 0.4) 50%, transparent 100%);
             border-radius: 50%;
             pointer-events: none;
             z-index: 9998;
-            left: ${e.clientX - 3}px;
-            top: ${e.clientY - 3}px;
+            left: ${e.clientX - 5}px;
+            top: ${e.clientY - 5}px;
             opacity: 0.7;
-            animation: trailFade 1s ease-out forwards;
+            animation: trailFade 2s ease-out forwards;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+            mix-blend-mode: screen;
         `;
         
         document.body.appendChild(trail);
@@ -466,8 +654,9 @@ document.addEventListener('mousemove', (e) => {
         setTimeout(() => {
             if (document.body.contains(trail)) {
                 document.body.removeChild(trail);
+                trailCount--;
             }
-        }, 1000);
+        }, 2000);
     }
 });
 
